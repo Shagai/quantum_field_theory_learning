@@ -1,0 +1,640 @@
+import ArticleLayout from '../components/ArticleLayout'
+import { Callout, Sidenote, Term } from '../components/MdxComponents'
+import {
+  BornRuleFigure,
+  PhaseFigure,
+  RelativisticEquationFigure,
+  SpacetimeIntervalFigure,
+} from '../components/InteractiveFigures'
+
+<ArticleLayout
+  kicker="Chapter 1"
+  title="Relativistic Quantum Mechanics"
+  subtitle="A first chapter for the QFT notebook: Hilbert spaces, amplitudes, rays, the Born rule, symmetry, Lorentz covariance, Klein-Gordon waves, Dirac spinors, and why a fixed one-particle theory is not the final language."
+  updated="2026-06-14"
+  readingTime="45 min"
+  toc={[
+    { href: '#orientation', label: 'Orientation' },
+    { href: '#hilbert-space', label: 'Hilbert space' },
+    { href: '#inner-products', label: 'Inner products' },
+    { href: '#rays', label: 'Rays and phase' },
+    { href: '#born-rule', label: 'Born rule' },
+    { href: '#operators', label: 'Operators' },
+    { href: '#symmetry', label: 'Symmetry' },
+    { href: '#relativity', label: 'Relativity' },
+    { href: '#klein-gordon', label: 'Klein-Gordon' },
+    { href: '#dirac', label: 'Dirac' },
+    { href: '#toward-fields', label: 'Toward fields' },
+    { href: '#checklist', label: 'Checklist' },
+  ]}
+>
+
+<h2 id="orientation">Orientation</h2>
+
+Quantum Field Theory starts from two demands that are each already powerful:
+
+1. Quantum mechanics says physical predictions come from amplitudes in a complex state space.
+2. Special relativity says the laws of physics must be organized so inertial observers agree on invariant content.
+
+This chapter builds the bridge between them. The first half fixes the language of ordinary quantum mechanics: Hilbert spaces, inner products, rays, normalization, measurement, and operators. The second half asks what has to change once energy, momentum, space, and time must transform together. That question leads to the Klein-Gordon and Dirac equations, and then to the main lesson: relativistic quantum mechanics is best understood as a signpost toward quantum fields.
+
+<div className="learning-goals">
+  <div>
+    <strong>State language</strong>
+    <p>Know what a ket, ray, inner product, amplitude, probability, and observable mean.</p>
+  </div>
+  <div>
+    <strong>Relativistic language</strong>
+    <p>Use four-vectors, invariant mass, Lorentz transformations, and covariant equations.</p>
+  </div>
+  <div>
+    <strong>QFT motivation</strong>
+    <p>Understand why relativistic quantum theory naturally wants fields, not only wavefunctions.</p>
+  </div>
+</div>
+
+<Callout title="Working convention">
+Most QFT books use natural units after the introductory stage:
+$$
+\hbar = c = 1.
+$$
+This chapter keeps $\hbar$ and $c$ visible where they clarify the physics, then switches to natural units when the formulas become cleaner.
+</Callout>
+
+<h2 id="hilbert-space">Hilbert space</h2>
+
+A <Term>Hilbert space</Term> is a complete complex vector space with an inner product. That short definition carries most of the structure of quantum mechanics.
+
+The phrase "complex vector space" means that if $\Phi$ and $\Psi$ are allowed vectors, then any linear combination
+
+$$
+\xi \Phi + \eta \Psi
+$$
+
+is also an allowed vector, where $\xi,\eta \in \mathbb C$. This is the mathematical origin of superposition. For a two-state spin example,
+
+$$
+|\Psi\rangle = a|\uparrow\rangle + b|\downarrow\rangle
+$$
+
+with complex coefficients $a$ and $b$. The state is not a hidden classical choice between "up" and "down"; it is a vector whose amplitudes determine measurement probabilities.
+
+The word "complete" is technical but important. It says that if a sequence of state vectors converges according to the norm defined by the inner product, the limiting vector is still in the space. This matters because quantum mechanics often uses infinite-dimensional spaces: wavefunctions, Fourier decompositions, momentum eigenstates, continuous spectra, and field modes all require limits to behave properly.
+
+<div className="concept-ladder">
+  <div className="concept-ladder-step">
+    <strong>Vector space</strong>
+    <span>States can be added and scaled. This is the formal home of superposition.</span>
+  </div>
+  <div className="concept-ladder-step">
+    <strong>Complex numbers</strong>
+    <span>Amplitudes carry phases. Phases are invisible in a single probability but visible through interference.</span>
+  </div>
+  <div className="concept-ladder-step">
+    <strong>Inner product</strong>
+    <span>Overlap between states becomes the amplitude for one state to be found as another.</span>
+  </div>
+  <div className="concept-ladder-step">
+    <strong>Completeness</strong>
+    <span>Limits, infinite sums, and continuous bases stay inside the mathematical space.</span>
+  </div>
+</div>
+
+In wave mechanics, a state can be represented by a wavefunction $\psi(x)$. A typical Hilbert space is $L^2(\mathbb R^3)$, the space of square-integrable complex functions. The inner product is
+
+$$
+\langle \phi|\psi\rangle =
+\int_{\mathbb R^3} d^3x\, \phi^*(x)\psi(x).
+$$
+
+In QFT, the state space will become bigger: the theory needs states with zero particles, one particle, two particles, and so on. That larger state space is called Fock space, but the same Hilbert-space logic remains underneath.
+
+<h2 id="inner-products">Inner products</h2>
+
+The inner product between two vectors $\Phi$ and $\Psi$ is written
+
+$$
+(\Phi,\Psi)
+$$
+
+or, in Dirac notation,
+
+$$
+\langle \Phi|\Psi\rangle.
+$$
+
+It returns a complex number. In physical language, it measures overlap. If
+
+$$
+\langle \Phi|\Psi\rangle = 0,
+$$
+
+the states are orthogonal. Orthogonal outcome states are perfectly distinguishable. For spin measured along the $z$ axis,
+
+$$
+\langle \uparrow|\downarrow\rangle = 0.
+$$
+
+The inner product satisfies three key rules. With the common physics convention, it is linear in the ket and conjugate-linear in the bra:
+
+$$
+(\Phi,\Psi) = (\Psi,\Phi)^*,
+$$
+
+$$
+(\Phi,\xi_1\Psi_1+\xi_2\Psi_2)
+=
+\xi_1(\Phi,\Psi_1)+\xi_2(\Phi,\Psi_2),
+$$
+
+and
+
+$$
+(\eta_1\Phi_1+\eta_2\Phi_2,\Psi)
+=
+\eta_1^*(\Phi_1,\Psi)+\eta_2^*(\Phi_2,\Psi).
+$$
+
+The conjugation is not a decorative detail. It guarantees that a vector has a real, nonnegative squared length:
+
+$$
+\|\Psi\|^2 = (\Psi,\Psi) \geq 0.
+$$
+
+For a physical state vector we usually choose a normalized representative:
+
+$$
+\langle \Psi|\Psi\rangle = 1.
+$$
+
+For the spin example,
+
+$$
+|\Psi\rangle = a|\uparrow\rangle + b|\downarrow\rangle
+$$
+
+is normalized when
+
+$$
+|a|^2 + |b|^2 = 1.
+$$
+
+<Sidenote>
+The convention "linear in the ket" is common in physics. Some math books use the opposite convention. The physics does not change, but formulas involving conjugates move between slots.
+</Sidenote>
+
+<Callout title="The first useful sentence">
+Inner products give amplitudes; squared magnitudes of amplitudes give probabilities.
+</Callout>
+
+<h2 id="rays">Rays and phase</h2>
+
+Physical states are not individual nonzero vectors. They are <Term>rays</Term>: equivalence classes of vectors that differ by a nonzero complex scalar. In symbols,
+
+$$
+|\Psi\rangle \sim \lambda|\Psi\rangle,
+\qquad \lambda \in \mathbb C,\quad \lambda \neq 0.
+$$
+
+After normalization, the only remaining freedom is usually a global phase:
+
+$$
+|\Psi\rangle \sim e^{i\alpha}|\Psi\rangle.
+$$
+
+This matters because multiplying the entire state by a global phase changes no measurable probability:
+
+$$
+|\langle n|e^{i\alpha}\Psi\rangle|^2
+=
+|e^{i\alpha}|^2 |\langle n|\Psi\rangle|^2
+=
+|\langle n|\Psi\rangle|^2.
+$$
+
+But a <Term>relative phase</Term> between components is physical. Compare
+
+$$
+|\Psi_+\rangle =
+\frac{1}{\sqrt 2}(|\uparrow\rangle + |\downarrow\rangle)
+$$
+
+with
+
+$$
+|\Psi_-\rangle =
+\frac{1}{\sqrt 2}(|\uparrow\rangle - |\downarrow\rangle).
+$$
+
+Both have a 50 percent probability of spin up and 50 percent probability of spin down if measured along $z$. They are not the same state, because another measurement basis can reveal the relative minus sign through interference.
+
+<PhaseFigure />
+
+This is one of the places where quantum mechanics differs sharply from classical probability. Classical probability adds probabilities. Quantum mechanics adds amplitudes first, and only then takes the squared magnitude. Phases are therefore bookkeeping for possible constructive or destructive interference.
+
+<h2 id="born-rule">Born rule</h2>
+
+The <Term>Born rule</Term> turns state vectors into probabilities. Suppose the system is in a normalized state $|\Psi\rangle$, and a measurement has normalized, mutually orthogonal outcome states
+
+$$
+|\Psi_1\rangle, |\Psi_2\rangle, |\Psi_3\rangle,\ldots
+$$
+
+with
+
+$$
+\langle \Psi_m|\Psi_n\rangle = 0
+\quad \text{for } m\neq n.
+$$
+
+Then the probability of obtaining outcome $n$ is
+
+$$
+P(\Psi \to \Psi_n)
+=
+|\langle \Psi_n|\Psi\rangle|^2.
+$$
+
+The inner product $\langle \Psi_n|\Psi\rangle$ is the amplitude. The probability is its absolute value squared.
+
+For example, if
+
+$$
+|\Psi\rangle =
+\sqrt{0.7}|\uparrow\rangle
++ \sqrt{0.3}|\downarrow\rangle,
+$$
+
+then measuring spin along $z$ gives
+
+$$
+P(\uparrow) =
+|\langle \uparrow|\Psi\rangle|^2
+=
+|\sqrt{0.7}|^2
+=
+0.7,
+$$
+
+and
+
+$$
+P(\downarrow)=0.3.
+$$
+
+<BornRuleFigure />
+
+If you use arbitrary non-normalized vectors, you must divide out their lengths:
+
+$$
+P(\mathcal R \to \mathcal R_n)
+=
+\frac{|(\Psi,\Psi_n)|^2}{(\Psi,\Psi)(\Psi_n,\Psi_n)}.
+$$
+
+For normalized representatives, the denominator is one and the cleaner formula applies.
+
+The probabilities sum to one when the outcome states form a complete orthonormal basis. Completeness means the possible outcomes span the relevant state space:
+
+$$
+|\Psi\rangle = \sum_n c_n|\Psi_n\rangle,
+\qquad c_n = \langle \Psi_n|\Psi\rangle,
+$$
+
+so
+
+$$
+\sum_n P_n
+=
+\sum_n |c_n|^2
+=
+1.
+$$
+
+<Callout title="Measurement language">
+The Born rule does not say a system secretly had one of the measurement results before the measurement. It says the state assigns amplitudes to possible outcomes, and probabilities are obtained from those amplitudes.
+</Callout>
+
+<h2 id="operators">Operators and observables</h2>
+
+Quantum observables are represented by self-adjoint operators on Hilbert space. A self-adjoint operator $A$ satisfies
+
+$$
+A^\dagger = A.
+$$
+
+This condition guarantees real eigenvalues, which is necessary because measurement results are real numbers. If
+
+$$
+A|a_n\rangle = a_n|a_n\rangle,
+$$
+
+then $a_n$ is a possible sharp measurement result and $|a_n\rangle$ is an associated eigenstate.
+
+For a normalized state $|\Psi\rangle$, the expectation value of $A$ is
+
+$$
+\langle A\rangle_\Psi
+=
+\langle \Psi|A|\Psi\rangle.
+$$
+
+This is not necessarily an actually observed value in a single run. It is the probability-weighted average over many identical preparations.
+
+| Object | Mathematical form | Physical reading |
+| --- | --- | --- |
+| State | `ket psi` | Preparation of the system |
+| Ray | `ket psi ~ exp(i alpha) ket psi` | Same physical state |
+| Observable | `A dagger = A` | Measurable quantity |
+| Outcome | `A ket a_n = a_n ket a_n` | Possible result |
+| Probability | `absolute square of amplitude` | Chance of that result |
+| Expectation | `bra psi A ket psi` | Ensemble average |
+
+Commutators encode compatibility:
+
+$$
+[A,B] = AB - BA.
+$$
+
+If two observables commute and have a common eigenbasis, they can be simultaneously sharp. If they do not commute, preparing a state sharp in one generally creates uncertainty in the other. This structure will later become central in QFT, where fields and conjugate momenta obey canonical commutation relations.
+
+<h2 id="symmetry">Symmetry</h2>
+
+Symmetry is the bridge from ordinary quantum mechanics to relativistic quantum mechanics. A symmetry transformation maps allowed states to allowed states while preserving probabilities. Preserving transition probabilities means
+
+$$
+|\langle \Phi|\Psi\rangle|^2
+$$
+
+stays invariant. In standard quantum mechanics, continuous symmetries are represented by unitary operators.
+
+Time evolution itself is unitary:
+
+$$
+|\Psi(t)\rangle = U(t)|\Psi(0)\rangle,
+$$
+
+with
+
+$$
+U(t)=e^{-iHt/\hbar}
+$$
+
+when the Hamiltonian $H$ is time independent. The Schrodinger equation follows:
+
+$$
+i\hbar \frac{d}{dt}|\Psi(t)\rangle = H|\Psi(t)\rangle.
+$$
+
+Spatial translations are generated by momentum, rotations by angular momentum, and time translations by the Hamiltonian:
+
+<div className="definition-strip">
+  <span>time -> Hamiltonian</span>
+  <span>space translations -> momentum</span>
+  <span>rotations -> angular momentum</span>
+  <span>boosts -> Lorentz generators</span>
+</div>
+
+In QFT, symmetry becomes even more decisive. The Poincare group, which combines translations, rotations, and Lorentz boosts, classifies relativistic particles by mass and spin. Internal symmetries later classify charges and interactions.
+
+<Callout title="Wigner's lesson">
+Particles in relativistic quantum theory can be understood as irreducible representations of the Poincare group, labeled by invariant mass and spin.
+</Callout>
+
+<h2 id="relativity">Relativity</h2>
+
+Special relativity changes the kinematic stage. Space and time combine into spacetime coordinates
+
+$$
+x^\mu = (ct,\mathbf x),
+$$
+
+and energy and momentum combine into a four-momentum
+
+$$
+p^\mu = \left(\frac{E}{c},\mathbf p\right).
+$$
+
+With metric signature $(+,-,-,-)$,
+
+$$
+p_\mu p^\mu =
+\frac{E^2}{c^2} - |\mathbf p|^2
+=
+m^2c^2.
+$$
+
+Equivalently,
+
+$$
+E^2 = |\mathbf p|^2c^2 + m^2c^4.
+$$
+
+This is the relativistic mass shell. It replaces the nonrelativistic kinetic energy relation
+
+$$
+E = \frac{|\mathbf p|^2}{2m}.
+$$
+
+<SpacetimeIntervalFigure />
+
+The central demand is <Term>Lorentz covariance</Term>: equations should keep their form under Lorentz transformations. A scalar equation should stay a scalar equation, a vector equation should transform as a vector equation, and a spinor equation should transform with the correct spinor representation.
+
+The spacetime derivative is
+
+$$
+\partial_\mu =
+\left(\frac{1}{c}\frac{\partial}{\partial t}, \nabla\right),
+$$
+
+and the d'Alembertian operator is
+
+$$
+\Box =
+\partial_\mu \partial^\mu
+=
+\frac{1}{c^2}\frac{\partial^2}{\partial t^2}
+- \nabla^2.
+$$
+
+In natural units, $c=\hbar=1$, the mass shell becomes
+
+$$
+E^2 = |\mathbf p|^2 + m^2,
+$$
+
+and the compact invariant form is
+
+$$
+p_\mu p^\mu = m^2.
+$$
+
+<div className="mass-shell-box">
+  <strong>Key replacement</strong>
+  <span>Nonrelativistic quantum mechanics quantizes $E=p^2/2m$.</span>
+  <span>Relativistic quantum mechanics must quantize $E^2=p^2+m^2$ or a linear equation whose square gives it.</span>
+</div>
+
+<h2 id="klein-gordon">Klein-Gordon equation</h2>
+
+The simplest relativistic wave equation comes from taking
+
+$$
+E^2 = \mathbf p^2 + m^2
+$$
+
+in natural units and applying the quantum substitutions
+
+$$
+E \to i\frac{\partial}{\partial t},
+\qquad
+\mathbf p \to -i\nabla.
+$$
+
+This gives
+
+$$
+\left(\frac{\partial^2}{\partial t^2} - \nabla^2 + m^2\right)\phi = 0,
+$$
+
+or
+
+$$
+(\Box + m^2)\phi = 0.
+$$
+
+This is the Klein-Gordon equation. It is Lorentz covariant and describes spin-0 relativistic modes.
+
+A plane-wave solution has the form
+
+$$
+\phi(x) = e^{-ip\cdot x},
+$$
+
+and substituting it into the equation gives the mass-shell condition:
+
+$$
+p_\mu p^\mu = m^2.
+$$
+
+So far this looks perfect. The difficulty appears when trying to interpret $\phi$ as an ordinary one-particle wavefunction. The equation is second order in time, and the conserved density is not positive definite in the same simple way that $|\psi|^2$ is for the Schrodinger equation.
+
+<div className="two-panel-grid">
+  <div>
+    <strong>What works</strong>
+    <p>The equation is covariant, has the correct relativistic dispersion relation, and describes scalar degrees of freedom.</p>
+  </div>
+  <div>
+    <strong>What fails as one-particle QM</strong>
+    <p>The probability-density interpretation is subtle, and negative-frequency solutions cannot simply be discarded.</p>
+  </div>
+</div>
+
+The modern QFT interpretation is cleaner: $\phi$ is not primarily a one-particle probability wave. It is a field, and its modes become operators that create and annihilate spin-0 particles.
+
+<h2 id="dirac">Dirac equation</h2>
+
+Dirac looked for a relativistic equation that is first order in both time and space:
+
+$$
+i\frac{\partial}{\partial t}\psi =
+\left(-i\boldsymbol{\alpha}\cdot\nabla + \beta m\right)\psi.
+$$
+
+For this equation to imply the relativistic mass shell, the matrices $\alpha^i$ and $\beta$ must satisfy algebraic relations. In covariant notation the result is
+
+$$
+(i\gamma^\mu\partial_\mu - m)\psi = 0,
+$$
+
+where the gamma matrices obey
+
+$$
+\{\gamma^\mu,\gamma^\nu\} = 2\eta^{\mu\nu}.
+$$
+
+The anticommutation relation is the algebraic mechanism that makes the square of the Dirac operator reproduce the Klein-Gordon operator:
+
+$$
+(i\gamma^\mu\partial_\mu - m)(i\gamma^\nu\partial_\nu + m)\psi
+=
+-(\Box + m^2)\psi.
+$$
+
+Thus every component of a free Dirac spinor satisfies the relativistic mass-shell condition, but the spinor has extra structure. It carries spin-$1/2$ degrees of freedom.
+
+<RelativisticEquationFigure />
+
+The Dirac equation also produces negative-energy solutions. Historically this was puzzling. In QFT, the interpretation is natural: the electron field has particle and antiparticle excitations. The negative-frequency part of the classical-looking equation becomes tied to positron creation operators after quantization.
+
+<Callout title="Dirac equation in one sentence">
+The Dirac equation is a Lorentz-covariant, first-order wave equation whose matrix structure encodes spin and whose full interpretation requires antiparticles.
+</Callout>
+
+<h2 id="toward-fields">Toward fields</h2>
+
+Relativistic quantum mechanics teaches the right lessons but is not the most stable final framework. The problems are not small technical annoyances; they point directly to QFT.
+
+First, relativity allows energy to become particles. If enough energy is localized, particle-antiparticle pairs can be produced. A theory with a permanently fixed number of particles cannot be fundamental.
+
+Second, locality is hard to express with a single-particle wavefunction. Relativistic causality wants observables at spacelike separation to be compatible in the right sense. In QFT this becomes the condition that local field operators commute or anticommute at spacelike separation.
+
+Third, the negative-frequency solutions of relativistic wave equations should not be thrown away. They are part of the representation theory and become essential in the field interpretation.
+
+<div className="deep-grid">
+  <div>
+    <strong>One-particle language</strong>
+    <p>A state vector describes one system with a fixed particle count. This is useful for approximations and scattering intuition.</p>
+  </div>
+  <div>
+    <strong>Field language</strong>
+    <p>Fields assign operator degrees of freedom to spacetime, and particles appear as excitations of those fields.</p>
+  </div>
+</div>
+
+The key conceptual move is:
+
+$$
+\text{wavefunction as state}
+\quad \longrightarrow \quad
+\text{field as operator}.
+$$
+
+For a scalar field, the classical mode expansion resembles
+
+$$
+\phi(x) =
+\int \frac{d^3p}{(2\pi)^3}
+\frac{1}{\sqrt{2E_{\mathbf p}}}
+\left(
+a_{\mathbf p}e^{-ip\cdot x}
++ a_{\mathbf p}^*e^{ip\cdot x}
+\right).
+$$
+
+After quantization, $a_{\mathbf p}$ and $a_{\mathbf p}^*$ become annihilation and creation operators. The field no longer describes the probability amplitude of one particle in the same way $\psi(x)$ does in nonrelativistic quantum mechanics. Instead, it creates, destroys, and propagates quanta.
+
+This is why QFT is not just "relativistic quantum mechanics with harder equations." It is a change in what the basic objects are.
+
+<h2 id="checklist">Checklist</h2>
+
+Before moving to classical field theory and quantization, the following should feel solid:
+
+1. A quantum state is represented by a ray in a complex Hilbert space.
+2. Inner products produce amplitudes, and squared magnitudes produce probabilities.
+3. Normalization and global phase do not change the physical state.
+4. Relative phase matters because amplitudes interfere.
+5. Observables are self-adjoint operators with real eigenvalues.
+6. Symmetries act on states and are generated by operators such as $H$, $\mathbf P$, and $\mathbf J$.
+7. Special relativity combines energy and momentum into four-vectors.
+8. The relativistic mass shell is $p_\mu p^\mu=m^2$ in natural units.
+9. The Klein-Gordon equation is covariant but awkward as a one-particle probability theory.
+10. The Dirac equation introduces spinors, gamma matrices, spin-$1/2$, and antiparticle structure.
+11. Fixed-particle-number wave mechanics is not enough once relativistic particle creation is allowed.
+12. Quantum fields are the natural objects for local, relativistic quantum theory.
+
+<Callout title="Next chapter">
+The next chapter should develop classical fields before quantizing them: Lagrangian densities, Euler-Lagrange equations, Noether currents, stress-energy, and examples for scalar, spinor, and gauge fields.
+</Callout>
+
+</ArticleLayout>
